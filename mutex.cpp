@@ -50,7 +50,7 @@ void my::mutex::lock() {
     } else {
         graph.add_edges(v);
         if (graph.loop_found(v)) {
-            std::cout << "DEADLOCK\n";
+            std::cerr << "DEADLOCK FOUND\n";
             assert(0);
         }
     }
@@ -68,38 +68,4 @@ bool my::mutex::try_lock() {
         return true;
     }
     return false;
-}
-
-my::mutex m1, m2;
-void func() {
-    for (int i = 0; i < 10000; ++i) {
-        m1.lock();
-        m2.lock();
-        m1.unlock();
-        m2.unlock();
-    }
-}
-
-
-int main() {
-
-
-    std::thread t1([&]() {
-        for (int i = 0; i < 10000; ++i) {
-            m1.lock();
-            m2.lock();
-            m1.unlock();
-            m2.unlock();
-        }
-    });
-    std::thread t2([&]() {
-      for (int i = 0; i < 10000; ++i) {
-          m2.lock();
-          m1.lock();
-          m2.unlock();
-          m1.unlock();
-      }
-    });
-    t1.join();
-    t2.join();
 }
